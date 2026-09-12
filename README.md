@@ -67,12 +67,12 @@ REST API para ecommerce con autenticación JWT, test y seeders.
 
 ### Arquitectura y componentes
 
-**Service Layer** - logica en services y los controladores delegan
-**Form Request** - validación en app/Http/Request/
-**API Resources** - serialización en app/Http/Resources/
-**Transacciones y locks** - DB::transaction + lockForUpdate que previene race conditions y duplicado de ordenes
-**Caché** - Productos y categorias con TTL de 60 segundos. Invalidación automatica tras la compra
-**Manejo de errores** - Excepciones globales con JSON consistente
+- **Service Layer** - logica en services y los controladores delegan
+- **Form Request** - validación en app/Http/Request/
+- **API Resources** - serialización en app/Http/Resources/
+- **Transacciones y locks** - DB::transaction + lockForUpdate que previene race conditions y duplicado de ordenes
+- **Caché** - Productos y categorias con TTL de 60 segundos. Invalidación automatica tras la compra
+- **Manejo de errores** - Excepciones globales con JSON consistente
 
 
 
