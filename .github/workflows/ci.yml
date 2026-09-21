@@ -37,6 +37,9 @@ jobs:
           php-version: '8.3'
           extensions: pgsql
 
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
       - name: Create .env
         run: |
           cp .env.example .env
@@ -51,9 +54,6 @@ jobs:
           sed -i 's/DB_DATABASE=.*/DB_DATABASE=ecommerce_test/' .env
           sed -i 's/DB_USERNAME=.*/DB_USERNAME=postgres/' .env
           sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=password/' .env
-
-      - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist
 
       - name: Run migrations
         run: php artisan migrate --force
