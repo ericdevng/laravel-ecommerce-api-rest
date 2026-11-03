@@ -74,5 +74,60 @@ REST API para ecommerce con autenticación JWT, test y seeders.
 - **Caché** - Productos y categorias con TTL de 60 segundos. Invalidación automatica tras la compra
 - **Manejo de errores** - Excepciones globales con JSON consistente
 
+## Docker
+
+La imagen se construye en varias etapas (dependencias PHP, assets con Vite y PHP 8.3 + Apache) y usa PostgreSQL como base de datos.
+
+### 1. Preparar variables de entorno
+
+```bash
+cp .env.example .env
+php artisan key:generate
+php artisan jwt:secret
+```
+
+Asegúrate de definir `DB_PASSWORD` en `.env`. `docker-compose.yml` usa ese valor para PostgreSQL y para la aplicación.
+
+### 2. Levantar la aplicación
+
+```bash
+docker compose up -d db
+docker compose --profile tools run --rm migrate
+docker compose up -d app queue
+```
+
+La API queda disponible en `http://localhost:8080` y el health check en `http://localhost:8080/up`.
+
+Para cargar los seeders:
+
+```bash
+docker compose run --rm app php artisan db:seed --force
+```
+
+### 3. Comandos útiles
+
+```bash
+docker compose logs -f app
+docker compose exec app php artisan tinker
+docker compose down
+docker compose down -v   # elimina también la base de datos y el storage
+```
+
+### 4. Imagen publicada por GitHub Actions
+
+El workflow `.github/workflows/ci.yml` ejecuta los tests, construye la imagen, hace un smoke test y la publica en GitHub Container Registry al hacer push a `main` o al crear un tag `v*.*.*`:
+
+```text
+ghcr.io/<owner>/<repo>:main
+ghcr.io/<owner>/<repo>:latest
+ghcr.io/<owner>/<repo>:v1.0.0
+```
+
+Para descargarla:
+
+```bash
+docker pull ghcr.io/<owner>/<repo>:main
+```
+
 
 

@@ -1,0 +1,67 @@
+name: laravel-ecommerce-api
+
+x-app: &app
+  build:
+    context: .
+    target: production
+  image: laravel-ecommerce-api:local
+  restart: unless-stopped
+  env_file:
+    - .env
+  environment: &app-environment
+    APP_ENV: production
+    APP_DEBUG: "false"
+    APP_URL: http://localhost:8080
+    DB_CONNECTION: pgsql
+    DB_HOST: db
+    DB_PORT: "5432"
+    DB_DATABASE: ${DB_DATABASE:-ecommerce}
+    DB_USERNAME: ${DB_USERNAME:-postgres}
+    DB_PASSWORD: ${DB_PASSWORD:-password}
+    LOG_CHANNEL: stderr
+    SESSION_DRIVER: database
+    CACHE_STORE: database
+    QUEUE_CONNECTION: database
+  depends_on:
+    db:
+      condition: service_healthy
+
+services:
+  app:
+    <<: *app
+    ports:
+      - "8080:80"
+    volumes:
+      - storage:/var/www/html/storage
+
+  queue:
+    <<: *app
+    command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+    volumes:
+      - storage:/var/www/html/storage
+
+  migrate:
+    <<: *app
+    restart: "no"
+    command: php artisan migrate --force
+    profiles:
+      - tools
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-ecommerce}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_DATABASE:-ecommerce}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:
+  storage:
