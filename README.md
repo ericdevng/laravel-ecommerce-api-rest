@@ -118,15 +118,15 @@ docker compose down -v   # elimina también la base de datos y el storage
 El workflow `.github/workflows/ci.yml` ejecuta los tests, construye la imagen, hace un smoke test y la publica en GitHub Container Registry al hacer push a `main` o al crear un tag `v*.*.*`:
 
 ```text
-ghcr.io/<owner>/<repo>:main
-ghcr.io/<owner>/<repo>:latest
-ghcr.io/<owner>/<repo>:v1.0.0
+ghcr.io/ericdevng/laravel-ecommerce-api:main
+ghcr.io/ericdevng/laravel-ecommerce-api:latest
+ghcr.io/ericdevng/laravel-ecommerce-api:v1.0.0
 ```
 
 Para descargarla:
 
 ```bash
-docker pull ghcr.io/<owner>/<repo>:main
+docker pull ghcr.io/ericdevng/laravel-ecommerce-api:main
 ```
 
 
